@@ -951,13 +951,47 @@ const charts={};
 const inited={};
 
 /* ── Ticker ── */
-(function(){
+async function buildTicker() {
+  try {
+    const res = await fetch('/api/live-prices');
+    const data = await res.json();
+    const c = data.crypto;
+    const items = [
+      {sym:'BTC', val:c.bitcoin?.usd, chg:c.bitcoin?.usd_24h_change},
+      {sym:'ETH', val:c.ethereum?.usd, chg:c.ethereum?.usd_24h_change},
+      {sym:'SOL', val:c.solana?.usd, chg:c.solana?.usd_24h_change},
+      {sym:'BNB', val:c.binancecoin?.usd, chg:c.binancecoin?.usd_24h_change},
+      {sym:'XRP', val:c.ripple?.usd, chg:c.ripple?.usd_24h_change},
+      {sym:'AAPL', val:271.86, chg:0.45},
+      {sym:'NIFTY50', val:24108, chg:0.84},
+      {sym:'RELIANCE', val:2269, chg:-1.56},
+      {sym:'TCS', val:2719, chg:-4.66},
+    ];
+    const html = items.map(i => {
+      const up = (i.chg||0) >= 0;
+      return `<div class="ti"><span class="ti-sym">${i.sym}</span><span class="ti-val">${(i.val||0).toLocaleString(undefined,{maximumFractionDigits:2})}</span><span class="${up?'ti-up':'ti-dn'}">${up?'+':''}${(i.chg||0).toFixed(2)}%</span></div>`;
+    }).join('');
+    document.getElementById('tInner').innerHTML = html + html;
+  } catch(e) {
+    const items = D.assets.map((a,i) => {
+      const pr=D.prices[a]; const last=pr[pr.length-1]; const prev=pr[pr.length-2];
+      const chg=((last-prev)/prev*100).toFixed(2); const up=parseFloat(chg)>=0;
+      return `<div class="ti"><span class="ti-sym">${a}</span><span class="ti-val">${last.toLocaleString()}</span><span class="${up?'ti-up':'ti-dn'}">${up?'+':''}${chg}%</span></div>`;
+    });
+    document.getElementById('tInner').innerHTML = items.join('')+items.join('');
+  }
+}
+buildTicker();
+setInterval(buildTicker, 60000);
+
+// OLD TICKER REMOVED - replaced above
+(function_replaced() {
   const items=D.assets.map((a,i)=>{
     const pr=D.prices[a];const last=pr[pr.length-1];const prev=pr[pr.length-2];
     const chg=((last-prev)/prev*100).toFixed(2);const up=parseFloat(chg)>=0;
     return `<div class="ti"><span class="ti-sym">${a}</span><span class="ti-val">${last.toLocaleString(undefined,{maximumFractionDigits:2})}</span><span class="${up?'ti-up':'ti-dn'}">${up?'+':''}${chg}%</span></div>`;
   });
-  document.getElementById('tInner').innerHTML=items.join('')+items.join('');
+  document.getElementById('tInner').innerHTML=items.join('')+items.join('');}
 })();
 
 /* ── Navigation ── */

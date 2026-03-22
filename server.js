@@ -25,6 +25,31 @@ function rateLimit(req, res, next) {
   if (rec.count > 30) return res.status(429).json({ error: 'Too many requests. Wait a moment.' });
   next();
 }
+// Live prices from CoinGecko (free, no key needed)
+app.get('/api/live-prices', async (req, res) => {
+  try {
+    const [cryptoRes, stockRes] = await Promise.all([
+      fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,ripple&vs_currencies=usd&include_24hr_change=true'),
+      fetch('https://query1.finance.yahoo.com/v8/finance/chart/AAPL?interval=1d&range=2d'),
+    ]);
+    const crypto = await cryptoRes.json();
+    res.json({ crypto, timestamp: Date.now() });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch live prices' });
+  }
+});
+
+
+// Live crypto prices from CoinGecko (free, no API key needed)
+app.get('/api/live-prices', async (req, res) => {
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,ripple&vs_currencies=usd&include_24hr_change=true');
+    const data = await r.json();
+    res.json({ crypto: data, timestamp: Date.now() });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch prices' });
+  }
+});
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', project: 'InvestIQ' }));
 
