@@ -51,6 +51,18 @@ app.get('/api/live-prices', async (req, res) => {
   }
 });
 
+
+// Live crypto prices — CoinGecko free API
+app.get('/api/live-prices', async (req, res) => {
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,ripple&vs_currencies=usd&include_24hr_change=true');
+    const data = await r.json();
+    res.json({ crypto: data, timestamp: Date.now() });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch prices' });
+  }
+});
+
 app.get('/health', (_req, res) => res.json({ status: 'ok', project: 'InvestIQ' }));
 
 app.post('/api/chat', rateLimit, async (req, res) => {
