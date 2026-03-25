@@ -62,6 +62,16 @@ That's it. 🎉
 
 The Analyst Chat and Rebalancer features use [Claude by Anthropic](https://console.anthropic.com). Without a key they return demo responses; with a key they answer in real-time.
 
+### Quick way — interactive setup script
+
+```bash
+npm run setup
+```
+
+The script will ask for your Anthropic API key, create `.env` for you, and tell you what to do next. That's it.
+
+### Manual way
+
 1. **Get a free API key** — sign up at [console.anthropic.com](https://console.anthropic.com) → API Keys → Create Key
    - It looks like: `sk-ant-api03-...`
 
