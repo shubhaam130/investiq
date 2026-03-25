@@ -6,7 +6,152 @@
 
 ---
 
-## ✅ How to Run (3 steps, ~60 seconds)
+## 🏁 Complete Setup Guide — Add API Key & Run the Project
+
+> Follow these **6 steps** from a fresh machine to a fully running app with live AI chat.
+> Each step takes about 30 seconds — total time ≈ 3–5 minutes.
+
+---
+
+### Step 1 — Install Node.js (skip if you already have it)
+
+1. Go to **[nodejs.org](https://nodejs.org)** and download the **LTS** version.
+2. Run the installer — accept all defaults.
+3. Open a **terminal** (macOS/Linux) or **Command Prompt / PowerShell** (Windows) and verify:
+
+```bash
+node -v   # must print v18.x.x or higher
+npm -v    # must print 9.x.x or higher
+```
+
+If either command says "not found", restart your terminal after installing and try again.
+
+---
+
+### Step 2 — Download the project
+
+```bash
+git clone https://github.com/shubhaam130/investiq.git
+cd investiq
+npm install
+```
+
+`npm install` downloads all dependencies (express, dotenv, etc.) into a local `node_modules` folder.
+It is safe to run multiple times.
+
+---
+
+### Step 3 — Get your Anthropic API key
+
+> ⚠️ **Security — read before continuing**
+>
+> Your API key is a **secret credential** that charges your Anthropic account.
+> - **Never** share it in a GitHub issue, Discord, chat, or screenshot.
+> - **Never** hard-code it directly in a source file.
+> - If you accidentally expose it, **revoke it immediately** at
+>   [console.anthropic.com](https://console.anthropic.com) → API Keys → Delete, then create a new one.
+>
+> The steps below store it in a local `.env` file that `.gitignore` prevents from ever being committed.
+
+1. Go to **[console.anthropic.com](https://console.anthropic.com)** and sign in (free account is fine).
+2. Click **API Keys** in the left sidebar.
+3. Click **Create Key** → give it a name (e.g. *InvestIQ*) → click **Create**.
+4. **Copy the key immediately** — it starts with `sk-ant-api03-…` and is shown only once.
+
+> 💡 **No key? No problem.** Skip to Step 4b to run in Demo Mode — all charts, tables and
+> forecasts work fully without a key. Only the live AI chat requires one.
+
+---
+
+### Step 4a — Add the key (recommended: interactive script)
+
+Run this command inside the `investiq` folder:
+
+```bash
+npm run setup
+```
+
+When prompted, **paste your key** and press Enter. The script creates `.env` for you.
+You will see:
+
+```
+✅  .env created with your API key.
+
+   Next steps:
+     npm start               # start the server
+     open http://localhost:3000
+```
+
+Jump to **Step 5** ↓
+
+---
+
+### Step 4b — Add the key manually (alternative)
+
+1. Create your `.env` file from the template:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Open `.env` in any text editor (Notepad, VS Code, nano …).
+   You will see this line:
+
+   ```
+   ANTHROPIC_API_KEY=sk-ant-your-key-here
+   ```
+
+3. Replace `sk-ant-your-key-here` with your real key:
+
+   ```
+   ANTHROPIC_API_KEY=sk-ant-api03-YOUR-ACTUAL-KEY-HERE
+   ```
+
+4. **Save the file.** Make sure it is named exactly `.env` — not `.env.txt`.
+
+---
+
+### Step 5 — Start the server
+
+```bash
+npm start
+```
+
+You will see one of:
+
+```
+✅  InvestIQ server running → http://localhost:3000
+   API key: ✓ loaded           ← live AI chat is active
+```
+
+or (Demo Mode, if you skipped the API key):
+
+```
+✅  InvestIQ server running → http://localhost:3000
+   API key: ✗ MISSING — check .env
+```
+
+Both are fine. The app works in both modes.
+
+---
+
+### Step 6 — Open in your browser
+
+```
+http://localhost:3000
+```
+
+You should see the InvestIQ dashboard. 🎉
+Click **Analyst Chat** or **Rebalancer** to test the AI features.
+
+---
+
+> **To stop the server**, press `Ctrl + C` in the terminal.
+> **To restart it later**, just run `npm start` again from the `investiq` folder.
+
+---
+
+## ✅ How to Run (quick reference — 3 steps)
 
 ### Prerequisites
 
