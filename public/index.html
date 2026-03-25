@@ -942,13 +942,20 @@ const allPriceDates=['2024-01','2024-02','2024-03','2024-04','2024-05','2024-06'
 const fcastDates=['2026-01','2026-02','2026-03','2026-04','2026-05','2026-06'];
 
 /* ── Chart defaults ── */
-Chart.defaults.color='rgba(255,255,255,.3)';
-Chart.defaults.borderColor='rgba(255,255,255,.05)';
-Chart.defaults.font.family="'DM Mono',monospace";
-Chart.defaults.font.size=10;
 const gc=()=>'rgba(255,255,255,.05)';
 const charts={};
 const inited={};
+if (typeof Chart === 'undefined') {
+  console.warn('Chart.js not loaded — charts disabled.');
+  const noop=()=>{};
+  const stub=()=>new Proxy({},{get:()=>noop});
+  window.Chart=stub; window.Chart.defaults={font:{}};
+} else {
+  Chart.defaults.color='rgba(255,255,255,.3)';
+  Chart.defaults.borderColor='rgba(255,255,255,.05)';
+  Chart.defaults.font.family="'DM Mono',monospace";
+  Chart.defaults.font.size=10;
+}
 
 /* ── Ticker ── */
 async function buildTicker() {
@@ -983,16 +990,6 @@ async function buildTicker() {
 }
 buildTicker();
 setInterval(buildTicker, 60000);
-
-// OLD TICKER REMOVED - replaced above
-(function_replaced() {
-  const items=D.assets.map((a,i)=>{
-    const pr=D.prices[a];const last=pr[pr.length-1];const prev=pr[pr.length-2];
-    const chg=((last-prev)/prev*100).toFixed(2);const up=parseFloat(chg)>=0;
-    return `<div class="ti"><span class="ti-sym">${a}</span><span class="ti-val">${last.toLocaleString(undefined,{maximumFractionDigits:2})}</span><span class="${up?'ti-up':'ti-dn'}">${up?'+':''}${chg}%</span></div>`;
-  });
-  document.getElementById('tInner').innerHTML=items.join('')+items.join('');}
-})();
 
 /* ── Navigation ── */
 const titles={
@@ -1207,6 +1204,7 @@ async function runSim(){
       max_tokens:600
     })});
     const data=await r.json();const txt=data.content?.[0]?.text||'Analysis unavailable.';
+    const demoNote=data.demo_mode?`<div style="margin-top:10px;padding:7px 10px;background:var(--warn-dim);border-radius:5px;border:1px solid rgba(245,158,11,.2)"><span style="font-family:var(--mono);font-size:9px;color:var(--warn)">⚡ Demo Mode — add your Anthropic API key to .env for live AI analysis.</span></div>`:'';
     out.innerHTML=`<div style="padding:16px">
       <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px">
         ${D.assets.map((a,i)=>`<div style="background:var(--n3);border:1px solid var(--b1);border-radius:6px;padding:5px 11px;font-family:var(--mono);font-size:11px"><span style="color:${D.colors[i]}">${a}</span> <span style="font-weight:600">${simW[a]}%</span><span style="font-size:9px;margin-left:3px;color:${simW[a]>D.weights[a]?'var(--up)':simW[a]<D.weights[a]?'var(--dn)':'var(--t4)'}">${simW[a]>D.weights[a]?'↑':simW[a]<D.weights[a]?'↓':'—'}</span></div>`).join('')}
@@ -1215,6 +1213,7 @@ async function runSim(){
         <div style="font-family:var(--mono);font-size:9px;color:var(--g0);letter-spacing:.12em;margin-bottom:10px;text-transform:uppercase">Analysis</div>
         <div style="font-size:12px;color:var(--t2);line-height:1.75">${fmtAI(txt)}</div>
       </div>
+      ${demoNote}
     </div>`;
   }catch{out.innerHTML='<div style="padding:20px;color:var(--dn);font-size:12px">Connection error — ensure the Node.js server is running with a valid API key.</div>';}
   btn.disabled=false;btn.textContent='Run Simulation';
@@ -1297,7 +1296,8 @@ async function sendMsg(){
     const txt=d.content?.find(b=>b.type==='text')?.text||'Unable to respond.';
     hist.push({role:'assistant',content:txt});
     document.getElementById('typ')?.remove();
-    addMsg('analyst',fmtAI(txt));
+    const demoNote=d.demo_mode?`<p style="font-size:10px;color:var(--warn);margin-top:8px;padding-top:8px;border-top:1px solid var(--b1)">⚡ Demo Mode — add your Anthropic API key to <code>.env</code> for live AI responses.</p>`:'';
+    addMsg('analyst',fmtAI(txt)+demoNote);
   }catch{
     document.getElementById('typ')?.remove();
     addMsg('analyst','<p>Connection error. Ensure the Node.js server is running and the API key is set in the <code>.env</code> file.</p>');
