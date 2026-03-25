@@ -62,43 +62,77 @@ That's it. 🎉
 
 The Analyst Chat and Rebalancer features use [Claude by Anthropic](https://console.anthropic.com). Without a key they return demo responses; with a key they answer in real-time.
 
-### Quick way — interactive setup script
+> ⚠️ **Security — please read first**
+>
+> Your Anthropic API key is a **secret password** that grants access to a paid service.
+> - **Never** paste it into a GitHub issue, chat message, or anywhere else that is publicly visible.
+> - **Never** commit it into a file that is tracked by git.
+> - If you accidentally share it publicly, **revoke it immediately** at [console.anthropic.com](https://console.anthropic.com) → API Keys → delete the key, then create a new one.
+>
+> This project is designed so the key stays in a local `.env` file (which `.gitignore` prevents from ever being committed).
+
+---
+
+### Step-by-step: add your API key
+
+**Step 1 — Get your key**
+
+1. Go to [console.anthropic.com](https://console.anthropic.com) and sign in (or create a free account).
+2. Click **API Keys** in the left sidebar.
+3. Click **Create Key**, give it a name (e.g. *InvestIQ*), and copy the key.
+   - It looks like: `sk-ant-api03-...`
+   - You can only see it once — copy it now.
+
+**Step 2 — Create your `.env` file** *(one-time, do this in your terminal)*
+
+```bash
+cp .env.example .env
+```
+
+This copies the template. The resulting `.env` file is listed in `.gitignore` so it will **never** be committed to GitHub.
+
+**Step 3 — Add the key to `.env`**
+
+Open `.env` in any text editor (Notepad, VS Code, nano, etc.) and change this line:
+
+```
+ANTHROPIC_API_KEY=sk-ant-your-key-here
+```
+
+to your actual key:
+
+```
+ANTHROPIC_API_KEY=sk-ant-api03-YOUR-ACTUAL-KEY-HERE
+```
+
+Save the file.
+
+**Step 4 — Restart the server**
+
+```bash
+npm start
+```
+
+You should now see:
+
+```
+✅  InvestIQ server running → http://localhost:3000
+   API key: ✓ loaded
+```
+
+If you still see `✗ MISSING`, double-check that the file is named exactly `.env` (not `.env.txt`) and is in the root of the project folder.
+
+---
+
+### Quick alternative — interactive setup script
+
+Instead of Steps 2–3 above you can run:
 
 ```bash
 npm run setup
 ```
 
-The script will ask for your Anthropic API key, create `.env` for you, and tell you what to do next. That's it.
-
-### Manual way
-
-1. **Get a free API key** — sign up at [console.anthropic.com](https://console.anthropic.com) → API Keys → Create Key
-   - It looks like: `sk-ant-api03-...`
-
-2. **Create your `.env` file:**
-
-   ```bash
-   cp .env.example .env
-   ```
-
-3. **Open `.env`** in any text editor and replace the placeholder:
-
-   ```
-   ANTHROPIC_API_KEY=sk-ant-api03-your-actual-key-here
-   ```
-
-4. **Restart the server:**
-
-   ```bash
-   npm start
-   ```
-
-   You should now see:
-
-   ```
-   ✅  InvestIQ server running → http://localhost:3000
-      API key: ✓ loaded
-   ```
+The script will prompt you to paste your key, write `.env` for you, and print next steps.
 
 ---
 
@@ -147,6 +181,7 @@ git push -u origin main
 | Charts not loading | The CDN for Chart.js is blocked on some networks — try a different network or browser |
 | AI chat returns demo responses | Add your `ANTHROPIC_API_KEY` to `.env` and restart the server |
 | `ANTHROPIC_API_KEY` not loading | Make sure the file is named exactly `.env` (not `.env.txt`) and is in the root folder |
+| Key was accidentally shared publicly | Revoke it immediately at [console.anthropic.com](https://console.anthropic.com) → API Keys, then create a new one |
 
 ---
 
